@@ -1,0 +1,33 @@
+{
+  "author": {
+    "name": "Anthony Leotta",
+    "email": "tony@leotta.com"
+  },
+  "contributors": [
+    {
+      "name": "Eric Paniagua",
+      "email": "epaniagua@google.com"
+    }
+  ],
+  "name": "meta-spec-core",
+  "version": "0.0.0",
+  "scripts": {
+    "build": "tsc",
+    "test": "mocha --reporter spec --compilers ts:ts-node/register ./test/**/*.test.ts"
+  },
+  "dependencies": {
+    "deep-equal": "^1.0.1"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.1.4",
+    "@types/deep-equal": "^1.0.1",
+    "@types/mocha": "^5.2.4",
+    "@types/node": "^10.5.2",
+    "chai": "^4.1.2",
+    "eslint": "^5.0.1",
+    "eslint-config-google": "^0.9.1",
+    "mocha": "^5.2.0",
+    "ts-node": "^7.0.0",
+    "typescript": "^2.9.2"
+  }
+}
