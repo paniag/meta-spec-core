@@ -1,5 +1,14 @@
+<<<<<<< HEAD
 node_modules/
 dist/
 *.js.map
 .*.sw[a-z]
 .vs/
+=======
+dist/
+node_modules/
+*.js.map
+.*.sw[a-z]
+.vs/
+.vscode/
+>>>>>>> 8c14e73859f6a001ea95012a7c877811b3e690ab
