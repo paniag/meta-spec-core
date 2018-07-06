@@ -1,6 +1,5 @@
 import { Common } from './common';
-import { deepEqual } from 'assert';
-import { Constraint } from './constraint';
+import deepEqual = require('deep-equal');
 
 export namespace Builtin {
   export const Constraints: Common.Constraints = {
@@ -165,6 +164,7 @@ export namespace Builtin {
         return Common.Valid();
       }
     },
+    boolean: { validator: builtinTypeValidator('boolean') },
     list: {
       validator: (value: any, constraint: any, validate: Common.ValidatorFunc): Common.Verdict => {
         if (!Array.isArray(value)) {
@@ -195,6 +195,7 @@ export namespace Builtin {
         return Common.Valid();
       }
     },
+    number: { validator: builtinTypeValidator('number') },
     object: {
       validator: (value: any, constraint: any, validate: Common.ValidatorFunc): Common.Verdict => {
         if (typeof value !== 'object') {
@@ -238,8 +239,18 @@ export namespace Builtin {
         }
         return ret;
       }
-    }
+    },
+    string: { validator: builtinTypeValidator('string') }
   };
+
+  function builtinTypeValidator(id: string): Common.ValidatorFunc {
+    return (value: any, constraint: any, validate: Common.ValidatorFunc): Common.Verdict => {
+      if (typeof value !== id) {
+        return error('builtinTypeValidator', `value is not a ${id}`);
+      }
+      return Common.Valid();
+    }
+  }
 
   function errorString(name: string, message: string): string {
     return `builtin.${name}: ${message}`;

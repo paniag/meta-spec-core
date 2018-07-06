@@ -1,3 +1,4 @@
+import deepEqual = require('deep-equal');
 import { Common } from '../src/common';
 import { Validator } from '../src/validation';
 import { expect } from 'chai';
@@ -145,12 +146,19 @@ let test_cases: Array<testCase> = [
 
 const validator = new Validator();
 
+describe('deepEqual', () => {
+  it('returns true for deepEqual(42,42)', () => {
+    const val = 42;
+    const lit = { id: 'literal', value: 42 };
+    expect(deepEqual(val, lit.value)).to.equal(true);
+  });
+});
+
 describe('Validate function', () => {
   for (let i in test_cases) {
     const tc = test_cases[i];
     it(tc.name, () => {
       const ret = validator.Validate(tc.value, tc.constraint);
-      expect(ret.isValid).to.equal(tc.isValid);
       if (ret.isValid != tc.isValid) {
         console.log(`Test FAILED ${i} ${tc.name}`);
         console.log(`  value: ${JSON.stringify(tc.value)}`);
@@ -160,6 +168,7 @@ describe('Validate function', () => {
       } else {
         console.log(`Test PASSED ${i} ${tc.name}`);
       }
+      expect(ret.isValid).to.equal(tc.isValid);
     });
   }
 });

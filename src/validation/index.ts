@@ -7,7 +7,11 @@ import { IsBasicType } from './util';
 export class Validator {
   constructor() {
     this.constraintManager = new Constraint.Manager();
-    this.defaultValidator = this.validateImpl;
+    this.defaultValidator = ((self) => {
+      return (v: any, c: any, f: Common.ValidatorFunc): Common.Verdict => {
+        return self.validateImpl(v, c);
+      };
+    })(this);
   }
 
   Validate(value: any, constraint: any): Common.Verdict {
