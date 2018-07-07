@@ -70,25 +70,23 @@ export namespace Builtin {
       value: { ref: 'number' }
     },
     map: {
-      id: 'object',
-      properties: [
-        {
-          id: 'property',
-          name: 'id',
-          constraint: 'map'
-        },
-        {
-          id: 'poperty',
-          name: 'key',
-          constraint: { ref: 'constraint' }
-        },
-        {
-          id: 'property',
-          name: 'value',
-          constraint: { ref: 'constraint' }
-        }
-      ],
-      constraint: null as Common.Constraint
+      id: 'list',
+      of: {
+        id: 'object',
+        properties: [
+          {
+            id: 'property',
+            name: 'key',
+            constraint: { ref: 'constraint' }
+          },
+          {
+            id: 'property',
+            name: 'value',
+            constraint: { ref: 'constraint' }
+          }
+        ],
+        constraint: null as Common.Constraint
+      }
     },
     object: {
       id: 'object',
@@ -232,40 +230,6 @@ export namespace Builtin {
             got: value,
             want: constraint.value
           }));
-        }
-        return Common.Valid();
-      }
-    },
-    map: {
-      validator: (value: any, constraint: any, validate: Common.ValidatorFunc): Common.Verdict => {
-        if (typeof value !== 'object') {
-          return error('mapValidator', 'value is not an object');
-        }
-        if (value === null) {
-          return error('mapValidator', 'value is null');
-        }
-        const ret = Common.Valid();
-        for (let k in value) {
-          let iret = validate(k, constraint.key, validate);
-          if (!iret.isValid) {
-            ret.isValid = false;
-            ret.errors.push(
-              errorString('mapValidator', `key ${k} fails to satisfy ` +
-                `constraint ${JSON.stringify(constraint.key)}`)
-            );
-          }
-          iret = validate(value[k], constraint.value, validate);
-          if (!iret.isValid) {
-            ret.isValid = false;
-            ret.errors.push(
-              errorString('mapValidator',
-                `value ${JSON.stringify(value[k])} fails to satisfy ` +
-                `constraint ${JSON.stringify(constraint.value)}`)
-            );
-          }
-        }
-        if (!ret.isValid) {
-          return ret;
         }
         return Common.Valid();
       }
