@@ -1,8 +1,10 @@
 export namespace Common {
   export interface Verdict {
     isValid: boolean,
-    errors: errors
+    errors: Errors
   }
+
+  export interface Errors extends Array<string | Errors> { }
 
   export function Valid(): Verdict {
     return { isValid: true, errors: [] }
@@ -64,6 +66,4 @@ export namespace Common {
   }
 
   export type ValidatorFunc = (value: any, constraint: any, validate: ValidatorFunc) => Verdict;
-
-  interface errors extends Array<string | errors> { }
 }
