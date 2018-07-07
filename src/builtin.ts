@@ -1,5 +1,6 @@
 import { Common } from './common';
 import deepEqual = require('deep-equal');
+import { Util } from './util';
 
 export namespace Builtin {
   export const Constraints: Common.Constraints = {
@@ -20,7 +21,7 @@ export namespace Builtin {
           }
         }
       ],
-      constraint: null as Common.Constraint
+      objectLevelConstraint: ''
     },
     anything: { id: 'anything' },
     boolean: { id: 'boolean' },
@@ -42,7 +43,7 @@ export namespace Builtin {
           constraint: { ref: 'constraint' }
         }
       ],
-      constraint: null as Common.Constraint
+      objectLevelConstraint: ''
     },
     literal: {
       id: 'object',
@@ -58,7 +59,7 @@ export namespace Builtin {
           constraint: { ref: 'anything' }
         }
       ],
-      constraint: null as Common.Constraint
+      objectLevelConstraint: ''
     },
     null: {
       id: 'literal',
@@ -87,11 +88,11 @@ export namespace Builtin {
         },
         {
           id: 'property',
-          name: 'constraint',
-          constraint: { ref: 'constraint' }
+          name: 'objectLevelConstraint',
+          constraint: { ref: 'string' }
         }
       ],
-      constraint: null as Common.Constraint
+      objectLevelConstraint: ''
     },
     property: {
       id: 'object',
@@ -112,7 +113,7 @@ export namespace Builtin {
           constraint: { ref: 'constraint' }
         }
       ],
-      constraint: null as Common.Constraint
+      objectLevelConstraint: ''
     },
     ref: {
       id: 'object',
@@ -123,7 +124,7 @@ export namespace Builtin {
           constraint: { ref: 'string' }
         }
       ],
-      constraint: null as Common.Constraint
+      objectLevelConstraint: ''
     },
     string: { id: 'string' },
     stringRef: {
@@ -253,13 +254,10 @@ export namespace Builtin {
   }
 
   function errorString(name: string, message: string): string {
-    return `builtin.${name}: ${message}`;
+    return Util.ErrorString(message, { prefix: 'builtin', name: name });
   }
 
   function error(name: string, message: string): Common.Verdict {
-    return {
-      isValid: false,
-      errors: [errorString(name, message)]
-    }
+    return Util.Error(errorString(name, message));
   }
 }

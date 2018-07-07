@@ -1,8 +1,8 @@
-import { Builtin } from '../builtin';
-import { Common } from '../common';
-import { Constraint } from '../constraint';
+import { Builtin } from './builtin';
+import { Common } from './common';
+import { Constraint } from './constraint';
 import deepEqual = require('deep-equal');
-import { IsBasicType } from './util';
+import { Util } from './util';
 
 export class Validator {
   constructor() {
@@ -96,7 +96,7 @@ export class Validator {
   private getValidator(id: string): Common.ValidatorFunc {
     const constraints = this.constraintManager.getConstraints();
     // A constraint is either a literal of a basic type...
-    if (IsBasicType(constraints[id])) {
+    if (Util.IsBasicType(constraints[id])) {
       return this.defaultValidator;
     }
     // or it satisfies the baseConstraint interface.
@@ -112,9 +112,9 @@ export class Validator {
 }
 
 function errorString(name: string, message: string): string {
-  return `validation.${name}: ${message}`;
+  return Util.ErrorString(message, { prefix: 'validation', name: name });
 }
 
 function error(name: string, message: string): Common.Verdict {
-  return { isValid: false, errors: [errorString(name, message)] };
+  return Util.Error(errorString(name, message));
 }
