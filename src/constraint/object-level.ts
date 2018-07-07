@@ -10,50 +10,22 @@ export namespace OLC {
     //  - Construct the Context object and a Constraint describing it.
     let { context, ctxConstraint, errors } = Ctx.Build(value, constraint);
     if (errors.length > 0) {
-      return {
-        isValid: false,
-        errors: [
-          errorString('Validate', 'failed to build context'),
-          errors
-        ]
-      };
+      return error('Validate', 'failed to build context', { errors: errors });
     }
     //  - Validate the Context object against that Constraint(?)
     //  - Derive a Data.Model from that Constraint.
     let model: Data.Model;
     ({ model, errors } = buildModel(ctxConstraint));
     if (errors.length > 0) {
-      return {
-        isValid: false,
-        errors: [
-          errorString('Validate', 'failed to build data model'),
-          errors
-        ]
-      };
+      return error('Validate', 'failed to build data model', { errors: errors });
     }
     //  - Build a QueryCombinator.Engine from the Data.Model.
-    let engine: QueryCombinator.Engine;
-    ({ engine, errors } = QueryCombinator.BuildEngine(model));
-    if (errors.length > 0) {
-      return {
-        isValid: false,
-        errors: [
-          errorString('Validate', 'failed to build query engine'),
-          errors
-        ]
-      };
-    }
+    const engine = QueryCombinator.BuildEngine(model);
     //  - Evaluate the Object-Level Constraint on the Value using Engine.Run.
     let result: any;
     ({ result, errors } = engine.Run(value, constraint.objectLevelConstraint));
     if (errors.length > 0) {
-      return {
-        isValid: false,
-        errors: [
-          errorString('Validate', 'query execution failed'),
-          errors
-        ]
-      };
+      return error('Validate', 'query execution failed', { errors: errors });
     }
     //  - Success!
     return Common.Valid();
@@ -74,5 +46,9 @@ export namespace OLC {
 
   function errorString(name: string, message: string): string {
     return Util.ErrorString(message, { prefix: 'OLC', name: name });
+  }
+
+  function error(name: string, message: string, opts?: Util.ErrorOpts): Common.Verdict {
+    return Util.Error(errorString(name, message), opts);
   }
 }

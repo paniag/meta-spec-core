@@ -9,20 +9,11 @@ import { Util } from '../util';
 
 export namespace QueryCombinator {
   // TODO: Add caching.
-  export function BuildEngine(model: Data.Model): EngineRet {
+  export function BuildEngine(model: Data.Model): Engine {
     // - Derive a query combinator parser from the Data.Model.
-    const { parser, errors } = Parser.Build(model);
-    if (errors.length > 0) {
-      return {
-        engine: null as Engine,
-        errors: errors
-      };
-    }
+    const parser = Parser.Build(model);
     // - Package result in an Engine and return it.
-    return {
-      engine: new Engine(parser, model),
-      errors: []
-    };
+    return new Engine(parser, model);
   }
 
   export class Engine {
@@ -65,11 +56,6 @@ export namespace QueryCombinator {
 
     private model: Data.Model;
     private parser: P.Parser<any>;
-  }
-
-  export interface EngineRet {
-    engine: Engine;
-    errors: Common.Errors;
   }
 
   export interface EngineRunRet {

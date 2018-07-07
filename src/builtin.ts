@@ -244,6 +244,31 @@ export namespace Builtin {
     string: { validator: builtinTypeValidator('string') }
   };
 
+  export const Combinators: Array<string> = [
+    'around',
+    'all',
+    'any',
+    'asc',
+    'before',
+    'connect',
+    'count',
+    'define',
+    'desc',
+    'exists',
+    'filter',
+    'frame',
+    'given',
+    'group',
+    'max',
+    'min',
+    'rollup',
+    'select',
+    'sort',
+    'sum',
+    'take',
+    'unique'
+  ];
+
   function builtinTypeValidator(id: string): Common.ValidatorFunc {
     return (value: any, constraint: any, validate: Common.ValidatorFunc): Common.Verdict => {
       if (typeof value !== id) {
