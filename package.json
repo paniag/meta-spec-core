@@ -6,13 +6,16 @@
     "name": "Anthony Leotta",
     "email": "tony@leotta.com"
   },
-  "contributors": [{
-    "name": "Eric Paniagua",
-    "email": "epaniagua@google.com"
-  }],
-  "main": "index.js",
+  "contributors": [
+    {
+      "name": "Eric Paniagua",
+      "email": "epaniagua@google.com"
+    }
+  ],
+  "main": "./dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc",
+    "test": "mocha --reporter spec --compilers ts:ts-node/register ./test/**/*.test.ts"
   },
   "repository": {
     "type": "git",
