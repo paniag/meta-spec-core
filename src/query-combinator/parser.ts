@@ -3,6 +3,7 @@ import P = require('parsimmon');
 import { Builtin } from '../builtin';
 import { Common } from '../common';
 import { Data } from './data-model';
+import { QueryCombinator } from '.';
 import { Util } from '../util';
 
 export namespace Parser {
@@ -15,7 +16,7 @@ export namespace Parser {
     for (let id in model.attributes) {
       attributeIDs.push(id);
     }
-    const combinators = Builtin.Combinators;
+    const combinators = QueryCombinator.Manager.getCombinators();
 
     const _ = (x: string) => P.string(x).trim(P.optWhitespace);
     const lang = P.createLanguage({

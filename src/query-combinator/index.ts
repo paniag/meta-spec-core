@@ -1,5 +1,6 @@
 import P = require('parsimmon');
 
+import { Builtin } from '../builtin';
 import { Common } from '../common';
 import { Compiler } from './compiler';
 import { Data } from './data-model';
@@ -8,6 +9,26 @@ import { Type } from './type';
 import { Util } from '../util';
 
 export namespace QueryCombinator {
+  class manager {
+    constructor() {
+      if (!manager.instance) {
+        this.combinators = Builtin.Combinators;
+        manager.instance = this;
+      }
+      return manager.instance;
+    }
+
+    static instance: manager;
+
+    getCombinators(): Array<string> {
+      return this.combinators;
+    }
+
+    private combinators: Array<string>;
+  }
+
+  export const Manager = Object.freeze(new manager());
+
   // TODO: Add caching.
   export function BuildEngine(model: Data.Model): Engine {
     // - Derive a query combinator parser from the Data.Model.

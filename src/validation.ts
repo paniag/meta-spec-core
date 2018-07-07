@@ -6,7 +6,6 @@ import { Util } from './util';
 
 export class Validator {
   constructor() {
-    this.constraintManager = new Constraint.Manager();
     this.defaultValidator = ((self) => {
       return (v: any, c: any, f: Common.ValidatorFunc): Common.Verdict => {
         return self.validateImpl(v, c);
@@ -16,7 +15,7 @@ export class Validator {
 
   Validate(value: any, constraint: any): Common.Verdict {
     // Validate constraint.
-    const constraintDef = this.constraintManager.getConstraints().constraint;
+    const constraintDef = Constraint.Manager.getConstraints().constraint;
     let ret = this.validateImpl(constraint, constraintDef);
     if (!ret.isValid) {
       ret.errors = [
@@ -29,7 +28,6 @@ export class Validator {
     return this.validateImpl(value, constraint);
   }
 
-  private constraintManager: Constraint.Manager;
   private defaultValidator: Common.ValidatorFunc;
 
   private validateImpl(value: any, constraint: any): Common.Verdict {
@@ -75,7 +73,7 @@ export class Validator {
   }
 
   private validateIDImpl(value: any, constraint: any): Common.Verdict {
-    const constraints = this.constraintManager.getConstraints();
+    const constraints = Constraint.Manager.getConstraints();
     if (typeof constraints[constraint.id] === 'undefined') {
       return error('validateIDImpl', `unknown constraint id '${constraint.id}`);
     }
@@ -89,18 +87,18 @@ export class Validator {
   }
 
   private validateRefImpl(value: any, constraint: any): Common.Verdict {
-    const constraints = this.constraintManager.getConstraints();
+    const constraints = Constraint.Manager.getConstraints();
     return this.validateImpl(value, constraints[constraint.ref]);
   }
 
   private getValidator(id: string): Common.ValidatorFunc {
-    const constraints = this.constraintManager.getConstraints();
+    const constraints = Constraint.Manager.getConstraints();
     // A constraint is either a literal of a basic type...
     if (Util.IsBasicType(constraints[id])) {
       return this.defaultValidator;
     }
     // or it satisfies the baseConstraint interface.
-    const metas = this.constraintManager.getConstraintMetas();
+    const metas = Constraint.Manager.getConstraintMetas();
     if (typeof metas[id] === 'undefined') {
       return this.defaultValidator;
     }
