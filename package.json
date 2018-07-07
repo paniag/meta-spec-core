@@ -1,20 +1,36 @@
 {
+  "name": "meta-spec-core",
+  "version": "0.0.0",
+  "description": "data validation library",
   "author": {
     "name": "Anthony Leotta",
     "email": "tony@leotta.com"
   },
-  "contributors": [
-    {
-      "name": "Eric Paniagua",
-      "email": "epaniagua@google.com"
-    }
-  ],
-  "name": "meta-spec-core",
-  "version": "0.0.0",
+  "contributors": [{
+    "name": "Eric Paniagua",
+    "email": "epaniagua@google.com"
+  }],
+  "main": "index.js",
   "scripts": {
-    "build": "tsc",
-    "test": "mocha --reporter spec --compilers ts:ts-node/register ./test/**/*.test.ts"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/datajango/meta-spec-core.git"
+  },
+  "keywords": [
+    "metadata",
+    "validation",
+    "models",
+    "modeling",
+    "model",
+    "data"
+  ],
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/datajango/meta-spec-core/issues"
+  },
+  "homepage": "https://github.com/datajango/meta-spec-core#readme",
   "dependencies": {
     "deep-equal": "^1.0.1",
     "parsimmon": "^1.11.1"
