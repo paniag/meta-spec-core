@@ -2,145 +2,162 @@ import { Common } from './common';
 import deepEqual = require('deep-equal');
 
 export namespace Builtin {
-  export const Constraints: Common.Constraints = {
-    any: {
-      id: 'object',
+  const constraints: Array<Common.Constraint> = [
+    {
+      id: 'builtin/constraint/any',
+      sort: 'object',
       properties: [
         {
-          id: 'property',
-          name: 'id',
+          sort: 'property',
+          name: 'sort',
           constraint: 'any'
         },
         {
-          id: 'property',
+          sort: 'property',
           name: 'constraints',
           constraint: {
-            id: 'list',
-            of: { ref: 'constraint' }
+            sort: 'list',
+            of: { sort: 'ref', refID: 'builtin/constraint/any' }
           }
         }
       ],
       constraint: null as Common.Constraint
     },
-    anything: { id: 'anything' },
-    boolean: { id: 'boolean' },
-    booleanRef: {
-      id: 'literal',
-      value: { ref: 'boolean' }
+    {
+      id: 'builtin/constraint/anything',
+      sort: 'anything'
     },
-    list: {
-      id: 'object',
+    {
+      id: 'builtin/constraint/boolean',
+      sort: 'boolean'
+    },
+    {
+      id: 'builtin/constraint/ref',
+      sort: 'object',
       properties: [
         {
-          id: 'property',
-          name: 'id',
+          sort: 'property',
+          name: 'sort',
+          constraint: 'ref'
+        },
+        {
+          sort: 'property',
+          name: 'refID',
+          constraint: { sort: 'ref', refID: 'builtin/constraint/string' }
+        }
+      ],
+      constraint: null as Common.Constraint
+    },
+    {
+      id: 'builtin/constraint/list',
+      sort: 'object',
+      properties: [
+        {
+          sort: 'property',
+          name: 'sort',
           constraint: 'list'
         },
         {
-          id: 'property',
+          sort: 'property',
           name: 'of',
-          constraint: { ref: 'constraint' }
+          constraint: { sort: 'ref', refID: 'builtin/constraint/constraint' }
         }
       ],
       constraint: null as Common.Constraint
     },
-    literal: {
-      id: 'object',
+    {
+      id: 'builtin/constraint/literal',
+      sort: 'object',
       properties: [
         {
-          id: 'property',
-          name: 'id',
+          sort: 'property',
+          name: 'sort',
           constraint: 'literal'
         },
         {
-          id: 'property',
+          sort: 'property',
           name: 'value',
-          constraint: { ref: 'anything' }
+          constraint: { sort: 'ref', refID: 'builtin/constraint/anything' }
         }
       ],
       constraint: null as Common.Constraint
     },
-    null: {
-      id: 'literal',
+    {
+      // TODO: Test if this constraint does anything or if null is hard coded
+      //  in all cases.
+      id: 'builtin/constraint/null',
+      sort: 'literal',
       value: null as any
     },
-    number: { id: 'number' },
-    numberRef: {
-      id: 'literal',
-      value: { ref: 'number' }
+    {
+      id: 'builtin/constraint/number',
+      sort: 'number'
     },
-    object: {
-      id: 'object',
+    {
+      id: 'builtin/constraint/object',
+      sort: 'object',
       properties: [
         {
-          id: 'property',
-          name: 'id',
+          sort: 'property',
+          name: 'sort',
           constraint: 'object'
         },
         {
-          id: 'property',
+          sort: 'property',
           name: 'properties',
           constraint: {
-            id: 'list',
-            of: { ref: 'property' }
+            sort: 'list',
+            of: { sort: 'ref', refID: 'builtin/constraint/property' }
           }
         },
         {
-          id: 'property',
+          sort: 'property',
           name: 'constraint',
-          constraint: { ref: 'constraint' }
+          constraint: { sort: 'ref', refID: 'builtin/constraint/constraint' }
         }
       ],
       constraint: null as Common.Constraint
     },
-    property: {
-      id: 'object',
+    {
+      id: 'builtin/constraint/property',
+      sort: 'object',
       properties: [
         {
-          id: 'property',
-          name: 'id',
+          sort: 'property',
+          name: 'sort',
           constraint: 'property'
         },
         {
-          id: 'property',
+          sort: 'property',
           name: 'name',
-          constraint: { ref: 'string' }
+          constraint: { sort: 'ref', refID: 'builtin/constraint/string' }
         },
         {
-          id: 'property',
+          sort: 'property',
           name: 'constraint',
-          constraint: { ref: 'constraint' }
+          constraint: { sort: 'ref', refID: 'builtin/constraint/constraint' }
         }
       ],
       constraint: null as Common.Constraint
     },
-    ref: {
-      id: 'object',
-      properties: [
-        {
-          id: 'property',
-          name: 'ref',
-          constraint: { ref: 'string' }
-        }
-      ],
-      constraint: null as Common.Constraint
+    {
+      id: 'builtin/constraint/string',
+      sort: 'string'
     },
-    string: { id: 'string' },
-    stringRef: {
-      id: 'literal',
-      value: { ref: 'string' }
+  ];
+  constraints.push({
+    id: 'builtin/constraint/constraint',
+    sort: 'any',
+    constraints: constraints
+  });
+  export const Constraints: Common.Constraints = (() => {
+    const cs: Common.Constraints = {};
+    for (let c of constraints) {
+      let a = <Common.BaseConstraint>c;
+      cs[a.id] = a;
     }
-  };
-  Constraints.constraint = {
-    id: 'any',
-    constraints: ((): Array<Common.Constraint> => {
-      let cs: Array<Common.Constraint> = [];
-      for (let id in Constraints) {
-        cs.push(Constraints[id]);
-      }
-      return cs;
-    })()
-  };
+    return cs;
+  })();
 
   export const ConstraintMetas: Common.ConstraintMetas = {
     any: {

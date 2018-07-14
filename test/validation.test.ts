@@ -15,7 +15,7 @@ let test_cases: Array<testCase> = [
   {
     name: 'undefined value',
     value: undefined,
-    constraint: { ref: 'string' },
+    constraint: { sort: 'ref', refID: 'builtin/constraint/string' },
     isValid: false
   },
   {
@@ -27,25 +27,25 @@ let test_cases: Array<testCase> = [
   {
     name: 'null for boolean',
     value: null,
-    constraint: { ref: 'boolean' },
+    constraint: { sort: 'ref', refID: 'builtin/constraint/boolean' },
     isValid: false
   },
   {
     name: 'null for number',
     value: null,
-    constraint: { ref: 'number' },
+    constraint: { sort: 'ref', refID: 'builtin/constraint/number' },
     isValid: false
   },
   {
     name: 'null for string',
     value: null,
-    constraint: { ref: 'string' },
+    constraint: { sort: 'ref', refID: 'builtin/constraint/string' },
     isValid: false
   },
   {
     name: 'null Constraint',
     value: null,
-    constraint: { ref: 'constraint' },
+    constraint: { sort: 'ref', refID: 'builtin/constraint/constraint' },
     isValid: true
   },
   {
@@ -57,7 +57,7 @@ let test_cases: Array<testCase> = [
   {
     name: 'number for boolean',
     value: 3,
-    constraint: { ref: 'boolean' },
+    constraint: { sort: 'ref', refID: 'boolean' },
     isValid: false
   },
   {
@@ -76,7 +76,7 @@ let test_cases: Array<testCase> = [
     name: 'number literal',
     value: 42,
     constraint: {
-      id: 'literal',
+      sort: 'literal',
       value: 42
     },
     isValid: true
@@ -90,7 +90,7 @@ let test_cases: Array<testCase> = [
       }
     },
     constraint: {
-      id: 'literal',
+      sort: 'literal',
       value: {
         foo: 3,
         bar: {
@@ -104,17 +104,17 @@ let test_cases: Array<testCase> = [
     name: 'Scout (valid)',
     value: { name: 'Scout', age: 4 },
     constraint: {
-      id: 'object',
+      sort: 'object',
       properties: [
         {
-          id: 'property',
+          sort: 'property',
           name: 'name',
-          constraint: { ref: 'string' }
+          constraint: { sort: 'ref', refID: 'builtin/constraint/string' }
         },
         {
-          id: 'property',
+          sort: 'property',
           name: 'age',
-          constraint: { ref: 'number' }
+          constraint: { sort: 'ref', refID: 'builtin/constraint/number' }
         }
       ],
       constraint: null as Common.Constraint
@@ -125,17 +125,17 @@ let test_cases: Array<testCase> = [
     name: 'Scout (invalid)',
     value: { name: 'Scout', age: 'four' },
     constraint: {
-      id: 'object',
+      sort: 'object',
       properties: [
         {
-          id: 'property',
+          sort: 'property',
           name: 'name',
-          constraint: { ref: 'string' }
+          constraint: { sort: 'ref', refID: 'builtin/constraint/string' }
         },
         {
-          id: 'property',
+          sort: 'property',
           name: 'age',
-          constraint: { ref: 'number' }
+          constraint: { sort: 'ref', refID: 'builtin/constraint/number' }
         }
       ],
       constraint: null as Common.Constraint
@@ -145,14 +145,6 @@ let test_cases: Array<testCase> = [
 ];
 
 const validator = new Validator();
-
-describe('deepEqual', () => {
-  it('returns true for deepEqual(42,42)', () => {
-    const val = 42;
-    const lit = { id: 'literal', value: 42 };
-    expect(deepEqual(val, lit.value)).to.equal(true);
-  });
-});
 
 describe('Validate function', () => {
   for (let i in test_cases) {
