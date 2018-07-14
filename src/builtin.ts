@@ -145,6 +145,7 @@ export namespace Builtin {
 
   export const ConstraintMetas: Common.ConstraintMetas = {
     any: {
+      cardinality: 'single',
       validator: (value: any, constraint: any, validate: Common.ValidatorFunc): Common.Verdict => {
         const ret: Common.Verdict = { isValid: false, errors: [] };
         for (let c of constraint.constraints) {
@@ -161,12 +162,18 @@ export namespace Builtin {
       }
     },
     anything: {
+      cardinality: 'single',
       validator: (value: any, constraint: any, validate: Common.ValidatorFunc): Common.Verdict => {
         return Common.Valid();
       }
     },
-    boolean: { validator: builtinTypeValidator('boolean') },
+    boolean: {
+      cardinality: 'single',
+      validator: builtinTypeValidator('boolean')
+    },
     list: {
+      cardinality: 'Seq',
+      innerProp: 'of',
       validator: (value: any, constraint: any, validate: Common.ValidatorFunc): Common.Verdict => {
         if (!Array.isArray(value)) {
           return error('listValidator', 'value is not a list');
@@ -186,6 +193,7 @@ export namespace Builtin {
       }
     },
     literal: {
+      cardinality: 'single',
       validator: (value: any, constraint: any, validate: Common.ValidatorFunc): Common.Verdict => {
         if (!deepEqual(value, constraint.value)) {
           return error('literalValidator', JSON.stringify({
@@ -196,8 +204,12 @@ export namespace Builtin {
         return Common.Valid();
       }
     },
-    number: { validator: builtinTypeValidator('number') },
+    number: {
+      cardinality: 'single',
+      validator: builtinTypeValidator('number')
+    },
     object: {
+      cardinality: 'single',
       validator: (value: any, constraint: any, validate: Common.ValidatorFunc): Common.Verdict => {
         if (typeof value !== 'object') {
           return error('objectValidator', 'value must be an object');
@@ -221,6 +233,7 @@ export namespace Builtin {
       }
     },
     property: {
+      cardinality: 'single',
       validator: (value: any, constraint: any, validate: Common.ValidatorFunc): Common.Verdict => {
         if (typeof value !== 'object') {
           return error('propertyValidator', 'value must be an object');
@@ -241,7 +254,10 @@ export namespace Builtin {
         return ret;
       }
     },
-    string: { validator: builtinTypeValidator('string') }
+    string: {
+      cardinality: 'single',
+      validator: builtinTypeValidator('string')
+    }
   };
 
   export const Combinators: Array<string> = [

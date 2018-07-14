@@ -3,6 +3,7 @@ import { Ctx } from '../context';
 import { Data } from '../query-combinator/data-model';
 import { Util } from '../util';
 import { QueryCombinator } from '../query-combinator';
+import { Constraint } from '.';
 
 export namespace OLC {
   export function Validate(value: any, constraint: Common.ObjectConstraint): Common.Verdict {
@@ -32,16 +33,77 @@ export namespace OLC {
   }
 
   function buildModel(ctxConstraint: Common.Constraint): buildModelRet {
-    // TODO: Implement.
+    function walk(cc: any, path: path, builder: Data.ModelBuilder): Common.Errors {
+      // TODO: Handle boolean, number, or string literals for cc.
+      if (typeof cc.id !== 'undefined' && typeof cc.ref !== 'undefined') {
+        return [errorString('buildModel.walk', 'ctxConstraint has both id and ref set')];
+      }
+      if (typeof cc.ref !== 'undefined') {
+        const domain: Data.Type = {
+          id: path[path.length - 1].id,
+          cardinality: <string>Constraint.Manager.getCardinality(path[path.length - 1].id).value
+        };
+        const codomain: Data.Type = {
+          id: cc.ref,
+          // TODO: Lookup 'ref' and handle the case that it has some other cardinality.
+          cardinality: <string>Constraint.Manager.getCardinality(cc.ref).value
+        };
+        if (codomain.cardinality !== 'single') {
+          codomain.innerType = {
+            id: Constraint.Manager.getConstraintMeta(cc.ref).value
+          };
+        }
+        builder.addRelationship({
+          id: path[path.length - 1].name,
+          type: {
+            id: 'function',
+            domain: domain,
+            codomain: codomain
+          }
+        });
+      }
+      if (typeof cc.id === 'undefined') {
+        return [errorString('buildModel.walk', 'ctxConstraint has neither id nor ref set')];
+      }
+      const { nextCtx, nextPath, errors } = handlers[cc.id](cc, path, builder);
+      // TODO: Implement.
+      return [errorString('buildModel.walk', 'not implemented')];
+    }
+    // TODO: Validate that ctxConstraint has value and constraint properties.
+    // We will assume that the ctxConstraint.value satisfies ctxConstraint.constraint.
+    const path: path = [];
+    const builder = new Data.ModelBuilder();
+    const errors = walk(ctxConstraint, path, builder);
     return {
-      model: null as Data.Model,
-      errors: [errorString('buildModel', 'not implemented')]
+      model: builder.getModel(),
+      errors: errors
     };
   }
 
   interface buildModelRet {
     model: Data.Model;
     errors: Common.Errors;
+  }
+
+  const handlers: handlers = {};
+
+  interface handlers {
+    [id: string]: handler;
+  }
+
+  type handler = (cc: any, path: path, builder: Data.ModelBuilder) => handlerRet;
+
+  interface handlerRet {
+    nextCtx: any;
+    nextPath: path;
+    errors: Common.Errors;
+  }
+
+  type path = Array<pathEntry>;
+
+  interface pathEntry {
+    id: string;
+    name: string;
   }
 
   function errorString(name: string, message: string): string {

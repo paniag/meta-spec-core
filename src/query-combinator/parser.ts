@@ -9,11 +9,11 @@ import { Util } from '../util';
 export namespace Parser {
   export function Build(model: Data.Model): P.Parser<any> {
     const relationshipIDs: Array<string> = [];
-    for (let id in model.relationships) {
+    for (let id in model.getRelationships()) {
       relationshipIDs.push(id);
     }
     const attributeIDs: Array<string> = [];
-    for (let id in model.attributes) {
+    for (let id in model.getAttributes()) {
       attributeIDs.push(id);
     }
     const combinators = QueryCombinator.Manager.getCombinators();

@@ -62,6 +62,8 @@ export namespace Common {
   }
 
   export interface ConstraintMeta {
+    cardinality: string;
+    innerProp?: string;
     validator?: ValidatorFunc;
   }
 
