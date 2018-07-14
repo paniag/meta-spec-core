@@ -11,13 +11,18 @@ export namespace Constraint {
       }
       return manager.instance;
     }
+
     static instance: manager;
-    getConstraints() {
+
+    getConstraints(): Common.Constraints {
       return this.constraints;
     }
-    getConstraintMetas() {
-      return this.constraintMetas;
+
+    hasConstraint(id: string): boolean {
+      return (typeof this.constraints !== 'undefined') &&
+        (typeof this.constraints[id] !== 'undefined');
     }
+
     getConstraint(id: string): anyerrors {
       if (typeof this.constraints[id] !== 'undefined') {
         return {
@@ -30,18 +35,78 @@ export namespace Constraint {
         errors: [errorString('manager.getConstraint', `there is no constraint with id '${id}'`)]
       };
     }
+
+    addConstraints(constraints: Common.Constraints): Common.Verdict {
+      const ret = Common.Valid();
+      for (let id in constraints) {
+        if (this.hasConstraint(id)) {
+          ret.isValid = false;
+          ret.errors.push(
+            errorString('Manager.addConstraints',
+              `constraint with id '${id}' already exists: not adding any ` +
+              'constraints')
+          );
+        }
+      }
+      if (!ret.isValid) {
+        return ret;
+      }
+
+      for (let id in constraints) {
+        this.constraints[id] = constraints[id];
+      }
+      return Common.Valid();
+    }
+
+    getConstraintMetas(): Common.ConstraintMetas {
+      return this.constraintMetas;
+    }
+
     getConstraintMeta(id: string): anyerrors {
-      if (typeof this.constraintMetas[id] === 'undefined') {
+      if (!this.hasConstraintMeta(id)) {
         return {
-          value: undefined,
-          errors: [errorString('manager.getConstraintMeta', `there is no constraint with id '${id}'`)]
+          value: null,
+          errors: [errorString('Manager.getConstraintMeta',
+            `there is no constraint meta with id '${id}'`)]
         };
       }
-      return {
-        value: this.constraintMetas[id],
-        errors: []
-      };
     }
+
+    hasConstraintMeta(id: string): boolean {
+      return (typeof this.constraintMetas !== 'undefined') &&
+        (typeof this.constraintMetas[id] !== 'undefined');
+    }
+
+    addConstraintMetas(metas: Common.ConstraintMetas): Common.Verdict {
+      const ret = Common.Valid();
+      for (let id in metas) {
+        if (!this.hasConstraint(id)) {
+          ret.isValid = false;
+          ret.errors.push(
+            errorString('Manager.addConstraintMetas',
+              `no constraint with id '${id}' exists: not adding any ` +
+              'constraints')
+          );
+        }
+        if (this.hasConstraintMeta(id)) {
+          ret.isValid = false;
+          ret.errors.push(
+            errorString('Manager.addConstraintMetas',
+              `constraint meta for id '${id}' already exists: not adding ` +
+              'any constraints')
+          );
+        }
+      }
+      if (!ret.isValid) {
+        return ret;
+      }
+
+      for (let id in metas) {
+        this.constraintMetas[id] = metas[id];
+      }
+      return Common.Valid();
+    }
+
     getCardinality(id: string): anyerrors { // Returns a string in the value field.
       const meta = this.getConstraintMeta(id).value;
       if (typeof meta.cardinality === 'undefined') {
@@ -55,6 +120,7 @@ export namespace Constraint {
         errors: []
       };
     }
+
     getValidator(id: string): anyerrors { // Returns a Common.ValidatorFunc in the value field.
       const meta = this.getConstraintMeta(id).value;
       if (typeof meta.validator === 'undefined') {
@@ -68,6 +134,7 @@ export namespace Constraint {
         errors: []
       };
     }
+
     private constraints: Common.Constraints;
     private constraintMetas: Common.ConstraintMetas;
   }

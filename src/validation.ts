@@ -1,7 +1,5 @@
-import { Builtin } from './builtin';
 import { Common } from './common';
 import { Constraint } from './constraint';
-import deepEqual = require('deep-equal');
 import { Util } from './util';
 
 export class Validator {
@@ -15,8 +13,8 @@ export class Validator {
 
   Validate(value: any, constraint: any): Common.Verdict {
     // Validate constraint.
-    const constraintDef = Constraint.Manager.getConstraints().constraint;
-    let ret = this.validateImpl(constraint, constraintDef);
+    const constraintDef = Constraint.Manager.getConstraints()['builtin/constraint/constraint'];
+    const ret = this.validateImpl(constraint, constraintDef);
     if (!ret.isValid) {
       ret.errors = [
         errorString('Validate', 'constraint failed validation'),
@@ -62,50 +60,29 @@ export class Validator {
       }
       return Common.Valid();
     }
-    if (typeof constraint.id !== 'undefined') {
-      return this.validateIDImpl(value, constraint);
+    if (typeof constraint.sort === 'undefined') {
+      return error('validateImpl', `constraint is missing 'sort' field`);
     }
-    if (typeof constraint.ref != 'undefined') {
-      return this.validateRefImpl(value, constraint);
-    }
-    return error('validateImpl', 'constraint has neither "id" nor "ref" ' +
-      'property');
-  }
-
-  private validateIDImpl(value: any, constraint: any): Common.Verdict {
-    const constraints = Constraint.Manager.getConstraints();
-    if (typeof constraints[constraint.id] === 'undefined') {
-      return error('validateIDImpl', `unknown constraint id '${constraint.id}`);
+    // The 'ref' sort is a special case we handle here to avoid needing
+    // to get at Constraint.Manager.getConstraints() from builtin.ts.
+    if (constraint.sort === 'ref') {
+      const constraints = Constraint.Manager.getConstraints();
+      return this.validateImpl(value, constraints[constraint.refID]);
     }
     // Delegate to the constraint's validator.
-    const validator = this.getValidator(constraint.id);
-    return validator(value, constraint, ((self) => {
-      return (v: any, c: any, f: Common.ValidatorFunc) => {
-        return self.validateImpl(v, c);
-      }
-    })(this));
+    const validator = this.getValidator(constraint.sort);
+    return validator(value, constraint, this.defaultValidator);
   }
 
-  private validateRefImpl(value: any, constraint: any): Common.Verdict {
-    const constraints = Constraint.Manager.getConstraints();
-    return this.validateImpl(value, constraints[constraint.ref]);
-  }
-
-  private getValidator(id: string): Common.ValidatorFunc {
-    const constraints = Constraint.Manager.getConstraints();
-    // A constraint is either a literal of a basic type...
-    if (Util.IsBasicType(constraints[id])) {
-      return this.defaultValidator;
-    }
-    // or it satisfies the baseConstraint interface.
+  private getValidator(sort: string): Common.ValidatorFunc {
     const metas = Constraint.Manager.getConstraintMetas();
-    if (typeof metas[id] === 'undefined') {
+    if (typeof metas[sort] === 'undefined') {
       return this.defaultValidator;
     }
-    if (typeof metas[id].validator === 'undefined') {
+    if (typeof metas[sort].validator === 'undefined') {
       return this.defaultValidator;
     }
-    return metas[id].validator;
+    return metas[sort].validator;
   }
 }
 
