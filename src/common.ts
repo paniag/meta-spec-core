@@ -12,6 +12,10 @@ export namespace Common {
     [id: string]: Constraint;
   }
 
+  export interface ConstraintMetas {
+    [sort: string]: ConstraintMeta;
+  }
+
   export type Constraint =
     boolean
     | number
@@ -26,7 +30,7 @@ export namespace Common {
 
   export interface BaseConstraint {
     id?: string;
-    ref?: string;
+    sort: string;
   }
 
   export interface AnyConstraint extends BaseConstraint {
@@ -34,7 +38,7 @@ export namespace Common {
   }
 
   export interface RefConstraint extends BaseConstraint {
-    ref: string;
+    refID: string;
   }
 
   export interface ListConstraint extends BaseConstraint {
@@ -53,10 +57,6 @@ export namespace Common {
   export interface PropertyConstraint extends BaseConstraint {
     name: string;
     constraint: Constraint;
-  }
-
-  export interface ConstraintMetas {
-    [id: string]: ConstraintMeta;
   }
 
   export interface ConstraintMeta {
