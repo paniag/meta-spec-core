@@ -14,7 +14,7 @@ export class Validator {
 
   Validate(value: any, constraint: any): Common.Verdict {
     // Validate constraint.
-    const constraintDef = this.constraintManager.getConstraints().constraint;
+    const constraintDef = this.constraintManager.getConstraints()['builtin/constraint/constraint'];
     const ret = this.validateImpl(constraint, constraintDef);
     if (!ret.isValid) {
       ret.errors = [
@@ -69,7 +69,7 @@ export class Validator {
     // to get at this.constraintManager.getConstraints() from builtin.ts.
     if (constraint.sort === 'ref') {
       const constraints = this.constraintManager.getConstraints();
-      return this.validateImpl(value, constraints[constraint.ref]);
+      return this.validateImpl(value, constraints[constraint.refID]);
     }
     // Delegate to the constraint's validator.
     const validator = this.getValidator(constraint.sort);
